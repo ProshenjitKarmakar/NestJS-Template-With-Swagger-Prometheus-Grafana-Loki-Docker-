@@ -1,0 +1,56 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:14
+    container_name: nest-crud-postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=proshenjit
+      - POSTGRES_DB=nest_crud_app
+    volumes:
+      - /home/proshenjit/Personal/Nest-JS/postgres:/var/lib/postgresql/data
+    ports:
+      - '7002:5432'  # Exposing PostgreSQL on port 7002
+
+  nestapp:
+    build:
+      context: ../  # Path to your NestJS project (Dockerfile must be here)
+      dockerfile: Dockerfile
+    container_name: nest-crud-app
+    ports:
+      - '7001:3000'  # Exposing NestJS app on port 7001
+    volumes:
+      - /home/proshenjit/Personal/Nest-JS/nest-prisma-crud:/usr/src/app
+    env_file:
+      - ../.env
+    environment:
+      - DATABASE_HOST=postgres  # Use service name `postgres` as hostname
+      - DATABASE_PORT=5432  # Standard PostgreSQL port inside the container
+      - DATABASE_USER=postgres
+      - DATABASE_PASSWORD=proshenjit
+      - DATABASE_NAME=nest_crud_app
+      - DATABASE_URL=postgresql://postgres:proshenjit@postgres:5432/nest_crud_app  # Using `postgres` as the hostname
+    depends_on:
+      - postgres  # Ensure Postgres starts before the app
+
+  adminer:
+    image: adminer
+    container_name: nest-crud-adminer
+    ports:
+      - '7003:8080'  # Exposing Adminer on port 7003
+    depends_on:
+      - postgres  # Ensure Postgres starts before Adminer
+    environment:
+      - ADMINER_DEFAULT_SERVER=postgres  # Set default server for Adminer to connect to
+  
+  prom-server:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus-config.yml:/etc/prometheus/prometheus.yml
+    depends_on:
+      - nestapp
+volumes:
+  postgres:
