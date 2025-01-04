@@ -26,37 +26,23 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
-## Project setup
+## Project is dockerize(v27) so please set all the configuration in `docker-env` also prometheus and loki configuration according to your local configuration and run inside `docker-env` folder: 
 
 ```bash
-$ npm install
+$ docker compose up -d 
 ```
 
-## Compile and run the project
+## to see logs of the project
 
 ```bash
-# development
-$ npm run start
+# logs
+$ docker logs -f name-of-the-container
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+# to go inside the container
+$ docker exec -it name-of-the-container sh
 ```
 
 ## Run tests
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
 
 ## Deployment
 
